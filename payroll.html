@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Payroll System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #3498db, #8e44ad);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .content {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .input-section {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .payslip-section {
+            flex: 2;
+            min-width: 600px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #2980b9;
+        }
+        
+        .period-selector {
+            background: #34495e;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .period-selector label {
+            color: white;
+            font-size: 14px;
+        }
+        
+        select {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            background: white;
+            color: #333;
+            font-size: 14px;
+            width: 300px;
+        }
+        
+        hr {
+            border: none;
+            border-top: 1px solid #ddd;
+            margin: 0;
+        }
+        
+        .view-options {
+            padding: 15px 20px;
+            background: #ecf0f1;
+            display: flex;
+            align-items: center;
+        }
+        
+        .view-options h2 {
+            font-size: 16px;
+            margin-right: 15px;
+            color: #2c3e50;
+        }
+        
+        .print-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
+        .print-btn:hover {
+            background: #2980b9;
+        }
+        
+        .period-info {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            background: #f8f9fa;
+        }
+        
+        .period-info strong {
+            margin-right: 10px;
+            color: #2c3e50;
+        }
+        
+        .payslip-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .payslip-table th {
+            background: #34495e;
+            color: white;
+            text-align: left;
+            padding: 12px 15px;
+            font-weight: 600;
+        }
+        
+        .payslip-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .earnings-section, .deductions-section {
+            width: 50%;
+            vertical-align: top;
+        }
+        
+        .earnings-section {
+            border-right: 1px solid #ddd;
+        }
+        
+        .amount {
+            text-align: right;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .summary {
+            padding: 20px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .taxable-income, .deductions-total {
+            width: 48%;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px 0;
+        }
+        
+        .summary-total {
+            font-weight: bold;
+            border-top: 2px solid #ddd;
+            padding-top: 10px;
+            margin-top: 5px;
+            color: #2c3e50;
+        }
+        
+        .net-pay {
+            font-size: 18px;
+            color: #27ae60;
+        }
+        
+        .ytd-summary {
+            padding: 20px;
+            background: #2c3e50;
+            color: white;
+        }
+        
+        .ytd-summary h2 {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .ytd-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 5px 0;
+        }
+        
+        .ytd-item:nth-child(even) {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .actions {
+            padding: 20px;
+            text-align: center;
+            background: #ecf0f1;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 0 10px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        .employee-info {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .employee-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .employee-id {
+            color: #7f8c8d;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .payslip-section {
+                min-width: 100%;
+            }
+            
+            .earnings-section, .deductions-section {
+                width: 100%;
+                display: block;
+            }
+            
+            .earnings-section {
+                border-right: none;
+                border-bottom: 1px solid #ddd;
+            }
+            
+            .summary {
+                flex-direction: column;
+            }
+            
+            .taxable-income, .deductions-total {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Employee Payroll System</h1>
+            <div class="period-selector">
+                <label for="period">Select Pay Period</label>
+                <select id="period">
+                    <option>August 2025 - First Half</option>
+                    <option>August 2025 - Second Half</option>
+                    <option>September 2025 - First Half</option>
+                    <option selected>September 2025 - Second Half</option>
+                </select>
+            </div>
+        </header>
+        
+        <div class="content">
+            <div class="input-section">
+                <h2>Employee Information</h2>
+                <div class="form-group">
+                    <label for="employeeName">Employee Name</label>
+                    <input type="text" id="employeeName" placeholder="Enter employee name">
+                </div>
+                <div class="form-group">
+                    <label for="employeeID">Employee ID</label>
+                    <input type="text" id="employeeID" placeholder="Enter employee ID">
+                </div>
+                
+                <h2>Hours Worked</h2>
+                <div class="form-group">
+                    <label for="regularHours">Regular Hours</label>
+                    <input type="number" id="regularHours" value="76" min="0" step="0.5">
+                </div>
+                <div class="form-group">
+                    <label for="overtimeHours">Overtime Hours</label>
+                    <input type="number" id="overtimeHours" value="12" min="0" step="0.5">
+                </div>
+                <div class="form-group">
+                    <label for="nightDiffHours">Night Differential Hours</label>
+                    <input type="number" id="nightDiffHours" value="8" min="0" step="0.5">
+                </div>
+                
+                <button id="calculateBtn">Calculate Payslip</button>
+                <button id="resetBtn" class="btn-secondary" style="background: #95a5a6;">Reset</button>
+            </div>
+            
+            <div class="payslip-section">
+                <div class="employee-info">
+                    <div class="employee-name" id="displayName">John Doe</div>
+                    <div class="employee-id" id="displayID">ID: EMP-2025-001</div>
+                </div>
+                
+                <div class="view-options">
+                    <h2>View</h2>
+                    <button class="print-btn">Printable Version</button>
+                </div>
+                
+                <div class="period-info">
+                    <strong>Period</strong> from Sep 16, 2025 to Sep 30, 2025
+                </div>
+                
+                <table class="payslip-table">
+                    <tr>
+                        <th colspan="3">Earnings</th>
+                        <th colspan="2">Deductions</th>
+                    </tr>
+                    <tr>
+                        <th>Description</th>
+                        <th>Hrs.</th>
+                        <th>Amount</th>
+                        <th>Description</th>
+                        <th>Amount</th>
+                    </tr>
+                    <tr>
+                        <td>Basic Pay</td>
+                        <td id="regHours">76.00</td>
+                        <td class="amount" id="basicPay">9,650.00</td>
+                        <td>Withholding Tax</td>
+                        <td class="amount">0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Overtime Pay</td>
+                        <td id="otHours">12.00</td>
+                        <td class="amount" id="otPay">1,286.67</td>
+                        <td>SSS Premium</td>
+                        <td class="amount">600.00</td>
+                    </tr>
+                    <tr>
+                        <td>Night Differential</td>
+                        <td id="ndHours">8.00</td>
+                        <td class="amount" id="ndPay">533.10</td>
+                        <td>PHIC Premium</td>
+                        <td class="amount">482.50</td>
+                    </tr>
+                    <tr>
+                        <td>Special Allowance</td>
+                        <td>4.00</td>
+                        <td class="amount">257.68</td>
+                        <td>HDMF Premium</td>
+                        <td class="amount">200.00</td>
+                    </tr>
+                    <tr>
+                        <td>Meal Allowance *</td>
+                        <td></td>
+                        <td class="amount">1,000.00</td>
+                        <td>Salary Advance</td>
+                        <td class="amount">1,381.25</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>Company Loan</td>
+                        <td class="amount">2,716.00</td>
+                    </tr>
+                </table>
+                
+                <div class="summary">
+                    <div class="taxable-income">
+                        <div class="summary-item">
+                            <span>Total Taxable Income</span>
+                            <span class="amount" id="taxableIncome">11,127.45</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>*Total Non-taxable Earnings</span>
+                            <span class="amount">1,000.00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="deductions-total">
+                        <div class="summary-item summary-total">
+                            <span>Total Deductions</span>
+                            <span class="amount">5,379.75</span>
+                        </div>
+                        <div class="summary-item summary-total net-pay">
+                            <span>NET PAY</span>
+                            <span class="amount" id="netPay">6,747.70</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ytd-summary">
+                    <h2>Year-to-Date Summary</h2>
+                    <div class="ytd-item">
+                        <span>Gross Pay</span>
+                        <span>200,915.55</span>
+                    </div>
+                    <div class="ytd-item">
+                        <span>Net Pay</span>
+                        <span>179,131.47</span>
+                    </div>
+                    <div class="ytd-item">
+                        <span>Withholding Tax</span>
+                        <span>2,946.33</span>
+                    </div>
+                    <div class="ytd-item">
+                        <span>SSS Premium</span>
+                        <span>8,600.00</span>
+                    </div>
+                    <div class="ytd-item">
+                        <span>SSS Provident</span>
+                        <span>2,275.00</span>
+                    </div>
+                    <div class="ytd-item">
+                        <span>PHIC Premium</span>
+                        <span>4,342.50</span>
+                    </div>
+                    <div class="ytd-item">
+                        <span>HDMF Premium</span>
+                        <span>1,800.00</span>
+                    </div>
+                    <div class="ytd-item">
+                        <span>Non-taxable</span>
+                        <span>17,000.00</span>
+                    </div>
+                </div>
+                
+                <div class="actions">
+                    <button class="btn btn-primary">Save Payslip</button>
+                    <button class="btn btn-secondary">Email Payslip</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get input elements
+            const employeeNameInput = document.getElementById('employeeName');
+            const employeeIDInput = document.getElementById('employeeID');
+            const regularHoursInput = document.getElementById('regularHours');
+            const overtimeHoursInput = document.getElementById('overtimeHours');
+            const nightDiffHoursInput = document.getElementById('nightDiffHours');
+            
+            // Get display elements
+            const displayName = document.getElementById('displayName');
+            const displayID = document.getElementById('displayID');
+            const regHoursDisplay = document.getElementById('regHours');
+            const otHoursDisplay = document.getElementById('otHours');
+            const ndHoursDisplay = document.getElementById('ndHours');
+            const basicPayDisplay = document.getElementById('basicPay');
+            const otPayDisplay = document.getElementById('otPay');
+            const ndPayDisplay = document.getElementById('ndPay');
+            const taxableIncomeDisplay = document.getElementById('taxableIncome');
+            const netPayDisplay = document.getElementById('netPay');
+            
+            // Calculate button
+            const calculateBtn = document.getElementById('calculateBtn');
+            calculateBtn.addEventListener('click', calculatePayslip);
+            
+            // Reset button
+            const resetBtn = document.getElementById('resetBtn');
+            resetBtn.addEventListener('click', resetForm);
+            
+            // Print button
+            const printBtn = document.querySelector('.print-btn');
+            printBtn.addEventListener('click', function() {
+                window.print();
+            });
+            
+            // Initialize with default values
+            calculatePayslip();
+            
+            function calculatePayslip() {
+                // Update employee info
+                displayName.textContent = employeeNameInput.value || 'John Doe';
+                displayID.textContent = 'ID: ' + (employeeIDInput.value || 'EMP-2025-001');
+                
+                // Get input values
+                const regularHours = parseFloat(regularHoursInput.value) || 0;
+                const overtimeHours = parseFloat(overtimeHoursInput.value) || 0;
+                const nightDiffHours = parseFloat(nightDiffHoursInput.value) || 0;
+                
+                // Update hours display
+                regHoursDisplay.textContent = regularHours.toFixed(2);
+                otHoursDisplay.textContent = overtimeHours.toFixed(2);
+                ndHoursDisplay.textContent = nightDiffHours.toFixed(2);
+                
+                // Calculate payments (simplified calculation)
+                const hourlyRate = 127.0; // Example hourly rate
+                const otRate = hourlyRate * 1.25; // Overtime rate
+                const ndRate = hourlyRate * 0.10; // Night differential rate
+                
+                const basicPay = regularHours * hourlyRate;
+                const otPay = overtimeHours * otRate;
+                const ndPay = nightDiffHours * ndRate;
+                
+                // Update payment displays
+                basicPayDisplay.textContent = basicPay.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                otPayDisplay.textContent = otPay.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                ndPayDisplay.textContent = ndPay.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                
+                // Calculate totals
+                const taxableIncome = basicPay + otPay + ndPay;
+                const deductions = 5379.75; // Fixed for this example
+                const netPay = taxableIncome - deductions;
+                
+                // Update total displays
+                taxableIncomeDisplay.textContent = taxableIncome.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                netPayDisplay.textContent = netPay.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            }
+            
+            function resetForm() {
+                employeeNameInput.value = '';
+                employeeIDInput.value = '';
+                regularHoursInput.value = '76';
+                overtimeHoursInput.value = '12';
+                nightDiffHoursInput.value = '8';
+                
+                calculatePayslip();
+            }
+        });
+    </script>
+</body>
+</html>
